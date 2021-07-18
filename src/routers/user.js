@@ -61,17 +61,7 @@ router.get("/users/me", auth, async (req, res) => {
 	res.send(req.user);
 });
 
-router.get("/users/:userId", async (req, res) => {
-	const userId = req.params.userId;
-	try {
-		const user = await User.findById(userId);
-		user ? res.send(user) : res.status(404).send();
-	} catch (e) {
-		res.status(500).send(e);
-	}
-});
-
-router.patch("/users/:userId", async (req, res) => {
+router.patch("/users/me", auth, async (req, res) => {
 	const updates = Object.keys(req.body);
 	const allowedUpdates = ["name", "email", "age", "password"];
 	const isUpadteValid = updates.every((update) =>
@@ -81,25 +71,23 @@ router.patch("/users/:userId", async (req, res) => {
 	if (!isUpadteValid)
 		return res.status(400).send({ error: "invalid update field" });
 
-	const userId = req.params.userId;
 	try {
-		const user = await User.findById(userId);
 		updates.forEach((update) => {
-			user[update] = req.body[update];
+			req.user[update] = req.body[update];
 		});
-		await user.save();
-		user ? res.send(user) : res.status(404).send();
+		await req.user.save();
+		res.send(req.user);
 	} catch (e) {
 		console.log(e);
-		res.status(500).send(e);
+		res.status(500).send();
 	}
 });
 
-router.delete("/users/:userId", async (req, res) => {
+router.delete("/users/me", auth, async (req, res) => {
 	const userId = req.params.userId;
 	try {
-		const user = await User.findByIdAndDelete(userId);
-		user ? res.send(user) : res.status(404).send();
+		await req.user.remove();
+		res.send(req.user);
 	} catch (e) {
 		res.status(500).send(e);
 	}
