@@ -19,9 +19,9 @@ router.post('/tasks', auth, async (req, res) => {
 	}
 });
 
-//GET /tasks?done=true
-//GET /tasks?limit=10&skip=20
-//GET /tasks?sortBy=createdAt:asc
+//	GET /tasks?done=true
+//	GET /tasks?limit=10&skip=20
+//	GET /tasks?sortBy=createdAt:asc
 
 router.get('/tasks', auth, async (req, res) => {
 	const match = {};
@@ -58,9 +58,9 @@ router.get('/tasks/:taskId', auth, async (req, res) => {
 	try {
 		// const task = await Task.findById(taskId);
 		const task = await Task.findOne({ _id: id, owner: req.user.id });
-		task ? res.send(task) : res.status(404).send();
+		return task ? res.send(task) : res.status(404).send();
 	} catch (e) {
-		res.status(500).send();
+		return res.status(500).send();
 	}
 });
 
@@ -85,9 +85,9 @@ router.patch('/tasks/:taskId', auth, async (req, res) => {
 			task[update] = req.body[update];
 		});
 		await task.save();
-		res.send(task);
+		return res.send(task);
 	} catch (e) {
-		res.status(500).send(e);
+		return res.status(500).send(e);
 	}
 });
 
@@ -95,9 +95,9 @@ router.delete('/tasks/:taskId', auth, async (req, res) => {
 	const _id = req.params.taskId;
 	try {
 		const task = await Task.findOneAndDelete({ _id, owner: req.user._id });
-		task ? res.send(task) : res.status(404).send();
+		return task ? res.send(task) : res.status(404).send();
 	} catch (e) {
-		res.status(500).send(e);
+		return res.status(500).send(e);
 	}
 });
 

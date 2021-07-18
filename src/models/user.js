@@ -81,6 +81,7 @@ userSchema.methods.toJSON = function () {
 };
 
 userSchema.statics.findByCredentials = async (email, password) => {
+	// eslint-disable-next-line no-use-before-define
 	const user = await User.findOne({ email });
 	if (!user) throw new Error('unable to login');
 

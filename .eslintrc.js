@@ -11,6 +11,7 @@ module.exports = {
 	rules: {
 		indent: [2, 'tab'],
 		'no-tabs': 0,
-		allowTernary: true,
+		allowTernary: 0,
+		'no-underscore-dangle': 0,
 	},
 };
