@@ -15,6 +15,6 @@ app.listen(port, () => console.log(`Server on port ${port}`));
 
 // const main = async (id) => {
 // 	const user = await User.findById(id);
-// 	await user.populate("tasks").execPopulate();
+// 	await user.populate('tasks').execPopulate();
 // };
 // main();

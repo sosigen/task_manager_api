@@ -1,10 +1,12 @@
-const express = require("express");
+const express = require('express');
+
 const router = new express.Router();
-const Task = require("../models/task");
-const auth = require("../middleware/auth");
+const Task = require('../models/task');
+const auth = require('../middleware/auth');
+
 router.use(express.json());
 
-router.post("/tasks", auth, async (req, res) => {
+router.post('/tasks', auth, async (req, res) => {
 	const task = new Task({
 		...req.body,
 		owner: req.user._id,
@@ -17,16 +19,30 @@ router.post("/tasks", auth, async (req, res) => {
 	}
 });
 
-router.get("/tasks", auth, async (req, res) => {
+//GET /tasks?done=true
+//GET /tasks?limit=10&skip=20
+//GET /tasks?sortBy=createdAt:asc
+
+router.get('/tasks', auth, async (req, res) => {
 	const match = {};
+	const sort = {};
 	if (req.query.done) {
-		match.done = req.query.done === "true";
+		match.done = req.query.done === 'true';
+	}
+	if (req.query.sortBy) {
+		const [sortField, sortType] = req.query.sortBy.split(':');
+		sort[sortField] = sortType === 'asc' ? 1 : -1;
 	}
 	try {
 		await req.user
 			.populate({
-				path: "tasks",
+				path: 'tasks',
 				match,
+				options: {
+					limit: +req.query.limit,
+					skip: +req.query.skip,
+					sort,
+				},
 			})
 			.execPopulate();
 		console.log(req.user.tasks);
@@ -37,26 +53,27 @@ router.get("/tasks", auth, async (req, res) => {
 	}
 });
 
-router.get("/tasks/:taskId", auth, async (req, res) => {
-	const _id = req.params.taskId;
+router.get('/tasks/:taskId', auth, async (req, res) => {
+	const id = req.params.taskId;
 	try {
 		// const task = await Task.findById(taskId);
-		const task = await Task.findOne({ _id, owner: req.user.id });
+		const task = await Task.findOne({ _id: id, owner: req.user.id });
 		task ? res.send(task) : res.status(404).send();
 	} catch (e) {
-		res.status(500).send(err);
+		res.status(500).send();
 	}
 });
 
-router.patch("/tasks/:taskId", auth, async (req, res) => {
+router.patch('/tasks/:taskId', auth, async (req, res) => {
 	const updates = Object.keys(req.body);
-	const allowedUpdates = ["done", "description"];
+	const allowedUpdates = ['done', 'description'];
 	const isUpadteValid = updates.every((update) =>
 		allowedUpdates.includes(update)
 	);
 
-	if (!isUpadteValid)
-		return res.status(400).send({ error: "invalid update field" });
+	if (!isUpadteValid) {
+		return res.status(400).send({ error: 'invalid update field' });
+	}
 
 	try {
 		const task = await Task.findOne({
@@ -74,7 +91,7 @@ router.patch("/tasks/:taskId", auth, async (req, res) => {
 	}
 });
 
-router.delete("/tasks/:taskId", auth, async (req, res) => {
+router.delete('/tasks/:taskId', auth, async (req, res) => {
 	const _id = req.params.taskId;
 	try {
 		const task = await Task.findOneAndDelete({ _id, owner: req.user._id });
