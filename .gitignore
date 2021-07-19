@@ -3,3 +3,4 @@ playground
 .eslintrc.js
 package-lock.json
 .vscode
+.gitignore
