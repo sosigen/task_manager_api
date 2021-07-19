@@ -49,6 +49,9 @@ const userSchema = new mongoose.Schema(
 				},
 			},
 		],
+		avatar: {
+			type: Buffer,
+		},
 	},
 	{
 		timestamps: true,
@@ -77,10 +80,11 @@ userSchema.methods.toJSON = function () {
 	const userObject = user.toObject();
 	delete userObject.password;
 	delete userObject.tokens;
+	delete userObject.avatar;
 	return userObject;
 };
 
-userSchema.statics.findByCredentials = async (email, password) => {
+userSchema.statics.checkCredentials = async (email, password) => {
 	// eslint-disable-next-line no-use-before-define
 	const user = await User.findOne({ email });
 	if (!user) throw new Error('unable to login');
