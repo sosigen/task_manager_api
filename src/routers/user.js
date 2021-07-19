@@ -6,10 +6,12 @@ const upload = multer({
 	limits: {
 		fileSize: 1000000,
 	},
-	// fileFilter(req, file, cb) {
-	// 	if (!file.originalname.match(/\.(doc|docx)$/)) {
-	// 	}
-	// },
+	fileFilter(req, file, cb) {
+		if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+			return cb(new Error('only jpg, jpeg, and png formats are valid'));
+		}
+		return cb(undefined, true);
+	},
 });
 
 const router = new express.Router();
