@@ -4,12 +4,13 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"dev": "nodemon ./src/index.js"
+		"dev": "env-cmd -f ./config/dev.env nodemon ./src/index.js"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@sendgrid/mail": "^7.4.5",
 		"bcrypt": "^5.0.1",
 		"express": "^4.17.1",
 		"jsonwebtoken": "^8.5.1",
@@ -19,6 +20,7 @@
 		"validator": "^13.6.0"
 	},
 	"devDependencies": {
+		"env-cmd": "^10.1.0",
 		"eslint": "^7.31.0",
 		"eslint-config-airbnb-base": "^14.2.1",
 		"eslint-config-node": "^4.1.0",
